@@ -196,7 +196,7 @@ namespace Yarn.Unity
         }
 
         // 因为UVS不能用泛型，所以这里新增一些按类型获取的接口
-        public override bool TryGetStringValue(string variableName, out string result)
+        public bool TryGetStringValue(string variableName, out string result)
         {
             ValidateVariableName(variableName);
 
