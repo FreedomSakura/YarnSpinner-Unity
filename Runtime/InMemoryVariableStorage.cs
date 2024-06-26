@@ -195,6 +195,32 @@ namespace Yarn.Unity
             }
         }
 
+        // 因为UVS不能用泛型，所以这里新增一些按类型获取的接口
+        public override bool TryGetStringValue(string variableName, out string result)
+        {
+            ValidateVariableName(variableName);
+
+            // If we don't have a variable with this name, return the null
+            // value
+            if (variables.ContainsKey(variableName) == false)
+            {
+                result = default;
+                return false;
+            }
+
+            var resultObject = variables[variableName];
+
+            if (typeof(string).IsAssignableFrom(resultObject.GetType()))
+            {
+                result = (string)resultObject;
+                return true;
+            }
+            else
+            {
+                throw new System.InvalidCastException($"Variable {variableName} exists, but is the wrong type (expected {typeof(string)}, got {resultObject.GetType()}");
+            }
+        }
+
         /// <summary>
         /// Removes all variables from storage.
         /// </summary>
