@@ -19,7 +19,7 @@ namespace Yarn.Unity
         [SerializeField] CanvasGroup canvasGroup;
 
         [SerializeField] OptionView optionViewPrefab;
-
+        [SerializeField] Transform optionViewRoot;
         [SerializeField] MarkupPalette palette;
 
         [SerializeField] float fadeTime = 0.1f;
@@ -158,7 +158,7 @@ namespace Yarn.Unity
             OptionView CreateNewOptionView()
             {
                 var optionView = Instantiate(optionViewPrefab);
-                optionView.transform.SetParent(transform, false);
+                optionView.transform.SetParent(optionViewRoot, false);
                 optionView.transform.SetAsLastSibling();
 
                 optionView.OnOptionSelected = OptionViewWasSelected;
