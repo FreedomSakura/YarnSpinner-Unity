@@ -158,7 +158,14 @@ namespace Yarn.Unity
             OptionView CreateNewOptionView()
             {
                 var optionView = Instantiate(optionViewPrefab);
-                optionView.transform.SetParent(optionViewRoot, false);
+                if (optionViewRoot != null)
+                {
+                    optionView.transform.SetParent(optionViewRoot, false);
+                }
+                else
+                {
+                    optionView.transform.SetParent(transform, false);
+                }
                 optionView.transform.SetAsLastSibling();
 
                 optionView.OnOptionSelected = OptionViewWasSelected;
