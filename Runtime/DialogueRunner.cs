@@ -171,6 +171,8 @@ namespace Yarn.Unity
         /// Yarn code.
         /// </summary>
         public Dialogue Dialogue => _dialogue ?? (_dialogue = CreateDialogueInstance());
+        
+        public LineView CurrentLineView { get; private set; }
 
         /// <summary>
         /// A flag used to detect if an options handler attempts to set the
@@ -966,7 +968,11 @@ namespace Yarn.Unity
                     }
 
                     ActiveDialogueViews.Add(dialogueView);
+
                 }
+
+                CurrentLineView = ActiveDialogueViews.FirstOrDefault(view => view is LineView) as LineView;
+
                 // Send line to all active dialogue views
                 foreach (var dialogueView in dialogueViews)
                 {

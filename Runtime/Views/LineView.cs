@@ -240,6 +240,12 @@ namespace Yarn.Unity
         /// </summary>
         Effects.CoroutineInterruptToken currentStopToken = new Effects.CoroutineInterruptToken();
 
+        /// <summary>
+        /// 是否要在Line结束后继续显示文字内容
+        /// </summary>
+        [SerializeField]
+        internal bool reserveLine = false;
+
         private void Awake()
         {
             canvasGroup.alpha = 0;
@@ -259,24 +265,27 @@ namespace Yarn.Unity
             StartCoroutine(DismissLineInternal(onDismissalComplete));
         }
 
-        private IEnumerator DismissLineInternal(Action onDismissalComplete)
+        private IEnumerator DismissLineInternal(Action onDismissalComplete, bool isCompleted = false)
         {
             // disabling interaction temporarily while dismissing the line
             // we don't want people to interrupt a dismissal
             var interactable = canvasGroup.interactable;
             canvasGroup.interactable = false;
 
-            // If we're using a fade effect, run it, and wait for it to finish.
-            if (useFadeEffect)
+            if (!reserveLine || isCompleted)
             {
-                yield return StartCoroutine(Effects.FadeAlpha(canvasGroup, 1, 0, fadeOutTime, currentStopToken));
-                currentStopToken.Complete();
+                // If we're using a fade effect, run it, and wait for it to finish.
+                if (useFadeEffect)
+                {
+                    yield return StartCoroutine(Effects.FadeAlpha(canvasGroup, 1, 0, fadeOutTime, currentStopToken));
+                    currentStopToken.Complete();
+                }
+
+                canvasGroup.alpha = 0;
+                canvasGroup.blocksRaycasts = false;
+                // turning interaction back on, if it needs it
+                canvasGroup.interactable = interactable;
             }
-            
-            canvasGroup.alpha = 0;
-            canvasGroup.blocksRaycasts = false;
-            // turning interaction back on, if it needs it
-            canvasGroup.interactable = interactable;
             
             if (onDismissalComplete != null)
             {
@@ -542,12 +551,15 @@ namespace Yarn.Unity
         public override void DialogueComplete()
         {
             // do we still have a line lying around?
-            if (currentLine != null)
-            {
+            // new: 因为添加了reserveLine参数，所以在这里需要强制执行一次DismissLine
+
+            //if (currentLine != null)
+            //{
                 currentLine = null;
                 StopAllCoroutines();
-                StartCoroutine(DismissLineInternal(null));
-            }
+                StartCoroutine(DismissLineInternal(null, true));
+            //}
+            
         }
 
         /// <summary>
